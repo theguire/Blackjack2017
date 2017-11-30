@@ -36,7 +36,7 @@ namespace Blackjack
 
         public Suit CardSuit { get; }
         public CardRank CardRank { get; }
-        public bool IsCardFaceUp { get; set; }
+      //  public bool IsCardFaceUp { get; set; }
 
         public int HardValue { get; }
         public int SoftValue { get; }
@@ -45,14 +45,14 @@ namespace Blackjack
         {
             this.CardSuit = s;
             this.CardRank = r;
-            this.IsCardFaceUp = true;
+      //      this.IsCardFaceUp = true;
 
         }
 
-        public void ShowFace()
-        {
-            IsCardFaceUp = !IsCardFaceUp;
-        }
+        //public void ShowFace()
+        //{
+        //    IsCardFaceUp = !IsCardFaceUp;
+        //}
 
 
         public override string ToString()
@@ -60,21 +60,21 @@ namespace Blackjack
             return $"{CardRank} of {CardSuit}";
         }
 
-        public int GetCardValue(CardRank CardRank)
-        {
+        //public int GetCardValue(CardRank CardRank)
+        //{
 
-            int CardRankValue = CardRank.GetHashCode();
-            switch (CardRankValue)
-            {
-                case JACK:
-                case QUEEN:
-                case KING:
-                    return (10);
-                default:
-                    return (CardRank.GetHashCode() + 1);
+        //    int CardRankValue = CardRank.GetHashCode();
+        //    switch (CardRankValue)
+        //    {
+        //        case JACK:
+        //        case QUEEN:
+        //        case KING:
+        //            return (10);
+        //        default:
+        //            return (CardRank.GetHashCode() + 1);
 
-            }
-        }
+        //    }
+        //}
 
 
     }

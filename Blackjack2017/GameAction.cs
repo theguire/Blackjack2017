@@ -9,7 +9,18 @@
         Hit = 5,
         Split = 6,
         DoubleDown = 7
+
     }
+
+    //public class GameActionPlay
+    //{
+    //    public bool DealAction(GameAction action)
+    //    {
+    //        return ((action & GameAction.Deal) == GameAction.Deal);
+    //    }
+    //}
+
+
 
 }
 

@@ -77,7 +77,7 @@ namespace Blackjack
         // Deal two cards to each player
         public void DealHands()
         {
-            if ((this.AllowedActions & GameAction.Deal) != GameAction.Deal)
+            if ( !IsActionAllowed( GameAction.Deal))
             {
                 throw new InvalidOperationException();
             }
@@ -85,21 +85,34 @@ namespace Blackjack
             this.LastState = GameState.Unknown;
 
 
+            // Build a new deck of cards before deal if less than 15 cards left in deck
             if ((this.deck == null) || (deck.Count() < 15))
             {
                 this.deck = new Deck();
             }
 
+            this.DealNewHands(); // Deal hand to player and dealer
+            this.PlayTheDeal();
+        }
+
+        private void DealPlayersCard()
+        {
+            this.deck.DealCard(this.Player.Hand);
+            this.deck.DealCard(this.Dealer.Hand);
+        }
+        private void ClearHands()
+        {
             this.Dealer.Hand.Clear();
             this.Player.Hand.Clear();
 
-            this.deck.DealCard(this.Player.Hand);
-            this.deck.DealCard(this.Dealer.Hand);
+        }
 
-            this.deck.DealCard(this.Player.Hand);
-            this.deck.DealCard(this.Dealer.Hand);
+        private void DealNewHands()
+        {
+            this.ClearHands();
+            this.DealPlayersCard();  // Deal first card to Player and Dealer
+            this.DealPlayersCard();  // Deal second card to Player and Dealer
 
-            PlayTheDeal();
         }
 
         private bool BustHand(Hand hand)
@@ -108,7 +121,7 @@ namespace Blackjack
         }
         public void Hit()
         {
-            if ((this.AllowedActions & GameAction.Hit) != GameAction.Hit)
+            if ( !IsActionAllowed( GameAction.Hit))
             {
                 throw new InvalidOperationException();
             }
@@ -152,7 +165,7 @@ namespace Blackjack
         }
         public void Stand()
         {
-            if ((this.AllowedActions & GameAction.Stand) != GameAction.Stand)
+           if ( ! IsActionAllowed(GameAction.Stand ))
             {
                 throw new InvalidOperationException();
             }
@@ -187,7 +200,15 @@ namespace Blackjack
                 this.AllowedActions = GameAction.Hit | GameAction.Stand;
             }
         }
+
+        public bool IsActionAllowed(GameAction desiredAction)
+        {
+            return ((this.AllowedActions & desiredAction) == desiredAction);
+        }
+
     }
+
+   
 }
 
 

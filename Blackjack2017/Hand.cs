@@ -26,17 +26,26 @@
 
         public int SoftValue
         {
-            get { return this.cards.Select(c => (int)c.CardRank > 1 && (int)c.CardRank < 11 ? (int)c.CardRank : 10).Sum(); }
+            // get { return this.cards.Select(c => (int)c.CardRank > 1 && (int)c.CardRank < 11 ? (int)c.CardRank : 10).Sum(); }
+            get { return(GetHandValue());  }
         }
+
+
+        // Return the number of Aces in the hand 
+        private int GetAcesCount()
+        {
+            return( this.cards.Count(c => c.CardRank == CardRank.Ace));
+        }
+
 
         public int TotalValue
         {
             get
             {
                 var totalValue = this.SoftValue;
-                var aces = this.cards.Count(c => c.CardRank == CardRank.Ace);
+                var numberOfAces = GetAcesCount();
 
-                while (aces-- > 0 && totalValue > 21)
+                while (numberOfAces-- > 0 && totalValue > 21)
                 {
                     totalValue -= 9;
                 }
@@ -47,16 +56,23 @@
 
         }
 
+        // Return the sum of the cards in the hand
+        private int GetHandValue()
+        {
+            return( this.cards.Select(c => (int)c.CardRank).Sum());
+        }
         public int FaceValue
         {
             get
             {
-                var faceValue = this.cards.Where(c => c.IsCardFaceUp)
-                .Select(c => (int)c.CardRank > 1 && (int)c.CardRank < 11 ? (int)c.CardRank : 10).Sum();
+                //var faceValue = this.cards.Where(c => c.IsCardFaceUp)
+                //.Select(c => (int)c.CardRank > 1 && (int)c.CardRank < 11 ? (int)c.CardRank : 10).Sum();
 
-                var aces = this.cards.Count(c => c.CardRank == CardRank.Ace);
+                var faceValue = GetHandValue();
+                //var aces = this.cards.Count(c => c.CardRank == CardRank.Ace);
+                var numberOfAces =GetAcesCount();
 
-                while (aces-- > 0 && faceValue > 21)
+                while (numberOfAces-- > 0 && faceValue > 21)
                 {
                     faceValue -= 9;
                 }
@@ -70,10 +86,6 @@
         //    get { throw new NotImplementedException(); }
         //}
 
-        private static void AddHandToPlayer()
-        {
-
-        }
         public void AddCard(PlayingCard card)
         {
             this.cards.Add(card);
@@ -84,21 +96,10 @@
             }
         }
 
-        public void Show()
+        // For splits - Player could have more than one hand
+        private static void AddHandToPlayer()
         {
-            this.cards.ForEach(
-                card =>
-                {
-                    if (!card.IsCardFaceUp)
-                    {
-                        card.ShowFace();
 
-                        if (Changed != null)
-                        {
-                            Changed(this, EventArgs.Empty);
-                        }
-                    }
-                });
         }
 
         public void Clear()
