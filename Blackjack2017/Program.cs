@@ -123,20 +123,6 @@
             Console.ResetColor();
         }
 
-        //private static void ShowWinner( PlayGame game )
-        //{
-        //    {
-        //        Console.ForegroundColor = ConsoleColor.DarkGreen;
-
-        //        Console.SetCursorPosition(Console.BufferWidth - 30, 1);
-        //        Console.Write((game.LastState == GameState.DealerWon ? "DEALER WON!" : "           ").PadLeft(28));
-
-        //        Console.SetCursorPosition(Console.BufferWidth - 30, 13);
-        //        Console.Write((game.LastState == GameState.PlayerWon ? "PLAYER WON!" : "           ").PadLeft(28));
-
-        //        Console.ResetColor();
-        //    }
-        //}
         private static void OnLastStateChanged(object sender, EventArgs e)
         {
             ShowWinner((PlayGame)sender);
