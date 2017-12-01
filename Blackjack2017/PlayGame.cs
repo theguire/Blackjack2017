@@ -114,11 +114,6 @@ namespace Blackjack
             this.DealPlayersCard();  // Deal second card to Player and Dealer
 
         }
-
-        private bool BustHand(Hand hand)
-        {
-            return (this.Player.Hand.TotalValue > 21);
-        }
         public void Hit()
         {
             if ( !IsActionAllowed( GameAction.Hit))
@@ -128,7 +123,7 @@ namespace Blackjack
 
             this.deck.DealCard(this.Player.Hand);
 
-            if (BustHand(this.Player.Hand))
+            if ( this.Player.Hand.BustHand(this.Player.Hand.RealValue))
             {
                 this.LastState = GameState.DealerWon;
                 this.AllowedActions = GameAction.Deal;
@@ -139,7 +134,7 @@ namespace Blackjack
         private void DealerPlay()
         {
 
-            while (this.Dealer.Hand.SoftValue < 17)
+            while ((this.Dealer.Hand.SoftValue < 17) && (this.Dealer.Hand.RealValue < 17))
             {
                 this.deck.DealCard(Dealer.Hand);
             }
@@ -147,13 +142,14 @@ namespace Blackjack
 
         }
 
-        public void DetermineWinner()
+        private void DetermineWinner()
         {
-            if (this.Dealer.Hand.TotalValue > 21 || this.Player.Hand.TotalValue > this.Dealer.Hand.TotalValue)
+            if (this.Dealer.Hand.BustHand(this.Dealer.Hand.RealValue) || 
+                            this.Player.Hand.RealValue > this.Dealer.Hand.RealValue)
             {
                 this.LastState = GameState.PlayerWon;
             }
-            else if (this.Dealer.Hand.TotalValue == this.Player.Hand.TotalValue)
+            else if (this.Dealer.Hand.RealValue == this.Player.Hand.RealValue)
             {
                 this.LastState = GameState.Draw;
             }
@@ -178,7 +174,7 @@ namespace Blackjack
         public void PlayTheDeal()
         {
 
-            if (this.Player.Hand.SoftValue == 21)
+            if (this.Player.Hand.SoftValue == 21 || this.Player.Hand.RealValue == 21 )
             {
                 if (this.Dealer.Hand.SoftValue == 21)
                 {
@@ -190,7 +186,7 @@ namespace Blackjack
                 }
                 this.AllowedActions = GameAction.Deal;
             }
-            else if (this.Dealer.Hand.TotalValue == 21)
+            else if (this.Dealer.Hand.RealValue == 21)
             {
                 this.LastState = GameState.DealerWon;
                 this.AllowedActions = GameAction.Deal;

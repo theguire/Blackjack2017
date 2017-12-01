@@ -10,6 +10,7 @@
         const int PlayerOffsetTop = 13;
         const int HorizontalOffsetStart = 2;
         const int GameResultsHorizontalOffset = 20;
+        const int CardHeight = 8;
 
         public static void Main(string[ ] args)
         {
@@ -128,36 +129,56 @@
             ShowWinner((PlayGame)sender);
         }
 
-        private static void ShowCards( Hand hand )
+        private static void ShowCards(Hand hand)
         {
             var offsetTop = hand.IsDealer ? DealerOffsetTop : PlayerOffsetTop;
-            var name = hand.IsDealer ? "Dealer" : "Player";
-            var value = hand.IsDealer ? hand.FaceValue : hand.TotalValue;
 
+            var name = hand.IsDealer ? "Dealer" : "Player";
+            
             Console.SetCursorPosition(HorizontalOffsetStart, offsetTop);
-            Console.Write(string.Format("{0} ({1}):", name, value).PadRight(25));
+            Console.Write(string.Format("{0} Real: ({1}) Hard: {2} Soft: {3}", 
+                                    name, hand.RealValue, hand.HardValue, hand.SoftValue)
+                                    .PadRight(30));
 
             for (var i = 0; i < hand.Cards.Count; i++)
             {
-                var last = i == hand.Cards.Count - 1;
+                var isPlayerCard = i == hand.Cards.Count - 1;
                 Console.SetCursorPosition(HorizontalOffsetStart + (i * 5), offsetTop + 2);
-                Console.Write("┌────" + (last ? "─┐" : string.Empty).PadRight(Console.BufferWidth - 12 - (i * 5)));
+                WriteCardTop(isPlayerCard, i);
+                
                 Console.SetCursorPosition(HorizontalOffsetStart + (i * 5), offsetTop + 3);
-                Console.WriteLine(" " + hand.Cards[i].ToString().PadRight(10) + string.Empty.PadRight(Console.BufferWidth - 12 - (i * 4)));
-                Console.SetCursorPosition(HorizontalOffsetStart + (i * 5), offsetTop + 4);
-                Console.WriteLine(" ".PadRight(5) + (last ? "  " : string.Empty).PadRight(Console.BufferWidth - 12 - (i * 5)));
-                Console.SetCursorPosition(HorizontalOffsetStart + (i * 5), offsetTop + 5);
-                Console.WriteLine(" ".PadRight(5) + (last ? "  " : string.Empty).PadRight(Console.BufferWidth - 12 - (i * 5)));
-                Console.SetCursorPosition(HorizontalOffsetStart + (i * 5), offsetTop + 6);
-                Console.WriteLine(" ".PadRight(5) + (last ? "  " : string.Empty).PadRight(Console.BufferWidth - 12 - (i * 5)));
-                Console.SetCursorPosition(HorizontalOffsetStart + (i * 5), offsetTop + 7);
-                Console.WriteLine(" ".PadRight(5) + (last ? "  " : string.Empty).PadRight(Console.BufferWidth - 12 - (i * 5)));
-                Console.SetCursorPosition(HorizontalOffsetStart + (i * 5), offsetTop + 8);
-                Console.WriteLine("└────" + (last ? "─┘" : string.Empty).PadRight(Console.BufferWidth - 12 - (i * 5)));
+                WriteCard(hand, i);
+
+                for (int  j = 4; j < CardHeight; j++)
+                {
+                    Console.SetCursorPosition(HorizontalOffsetStart + (i * 5), offsetTop + j);
+                    WriteCardBorder(isPlayerCard, i);
+                }
+
+                Console.SetCursorPosition(HorizontalOffsetStart + (i * 5), offsetTop + CardHeight);
+                WriteCardBottom(isPlayerCard, i);
+
+                
             }
         }
 
+        private static void WriteCardBorder( bool isPlayerCard, int i)
+        {
+            Console.WriteLine(" ".PadRight(5) + (isPlayerCard ? "  " : string.Empty).PadRight(Console.BufferWidth - 12 - (i * 5)));
+        }
+        private static void WriteCard(Hand hand, int i)
+        {
+            Console.WriteLine(" " + hand.Cards[i].ToString().PadRight(10) + string.Empty.PadRight(Console.BufferWidth - 12 - (i * 4)));
+        }
+        private static void WriteCardTop( bool isPlayerCard, int i)
+        {
+            Console.Write("┌────" + (isPlayerCard ? "─┐" : string.Empty).PadRight(Console.BufferWidth - 12 - (i * 5)));
+        }
 
+        private static void WriteCardBottom(bool isPlayerCard, int i)
+        {
+            Console.WriteLine("└────" + (isPlayerCard ? "─┘" : string.Empty).PadRight(Console.BufferWidth - 12 - (i * 5)));
+        }
 
         private static void OnHandChanged(object sender, EventArgs e)
         {

@@ -26,10 +26,8 @@
 
         public int SoftValue
         {
-            // get { return this.cards.Select(c => (int)c.CardRank > 1 && (int)c.CardRank < 11 ? (int)c.CardRank : 10).Sum(); }
             get { return(GetHandValue());  }
         }
-
 
         // Return the number of Aces in the hand 
         private int GetAcesCount()
@@ -37,55 +35,32 @@
             return( this.cards.Count(c => c.CardRank == CardRank.Ace));
         }
 
-
-        public int TotalValue
+        public int RealValue
         {
             get
             {
-                var totalValue = this.SoftValue;
-                var numberOfAces = GetAcesCount();
-
-                while (numberOfAces-- > 0 && totalValue > 21)
-                {
-                    totalValue -= 9;
-                }
-
-                return totalValue;
-
+                return (BustHand(HardValue) ? SoftValue : (HardValue >= SoftValue ? HardValue : SoftValue));
             }
-
         }
 
+        public int HardValue
+        {
+            get
+            {
+                // If there is at least one Ace, add 10 to the hard.
+                return( this.SoftValue +  (GetAcesCount() >= 1 ? 10 : 0)); 
+            }
+        }
         // Return the sum of the cards in the hand
         private int GetHandValue()
         {
             return( this.cards.Select(c => (int)c.CardRank).Sum());
         }
-        public int FaceValue
+
+        public bool BustHand( int handValue )
         {
-            get
-            {
-                //var faceValue = this.cards.Where(c => c.IsCardFaceUp)
-                //.Select(c => (int)c.CardRank > 1 && (int)c.CardRank < 11 ? (int)c.CardRank : 10).Sum();
-
-                var faceValue = GetHandValue();
-                //var aces = this.cards.Count(c => c.CardRank == CardRank.Ace);
-                var numberOfAces =GetAcesCount();
-
-                while (numberOfAces-- > 0 && faceValue > 21)
-                {
-                    faceValue -= 9;
-                }
-
-                return faceValue;
-            }
+            return (handValue > 21);   
         }
-
-        //public bool IsBlackjack
-        //{
-        //    get { throw new NotImplementedException(); }
-        //}
-
         public void AddCard(PlayingCard card)
         {
             this.cards.Add(card);

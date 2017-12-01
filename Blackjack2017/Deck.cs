@@ -36,6 +36,7 @@ namespace Blackjack
             Random rand = new Random();
 
             if (deck.Count == 0)
+            { }
                 deck = MakeADeck();
             int idx = rand.Next( deck.Count);   // Get a random # between 0-# of cards left in deck
 
@@ -50,6 +51,7 @@ namespace Blackjack
 
         public static List<PlayingCard> MakeADeck()
         {
+            
             return (
                         from s in Suits()
                         from r in CardRanks()
