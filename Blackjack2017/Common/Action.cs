@@ -1,6 +1,6 @@
 ﻿namespace Blackjack
 {
-    public enum GameAction : byte
+    public enum Action : byte
     {
         None = 1,
         Shuffle = 2,

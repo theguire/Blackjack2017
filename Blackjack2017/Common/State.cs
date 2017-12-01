@@ -2,7 +2,7 @@
 
 namespace Blackjack
 {
-    public enum GameState : byte
+    public enum State : byte
     {
         Unknown,
         PlayerWon,

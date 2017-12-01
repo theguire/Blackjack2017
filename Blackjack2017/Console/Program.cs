@@ -35,7 +35,7 @@
                 {
                     case ConsoleKey.D:  //Deal 
                     case ConsoleKey.S:  // Stand
-                        if ( game.IsActionAllowed( GameAction.Deal ))
+                        if ( game.IsActionAllowed(Blackjack.Action.Deal ))
                         {
                             game.DealHands();
                         }
@@ -47,7 +47,7 @@
 
                         break;
                     case ConsoleKey.H:  // Hit
-                        if ( game.IsActionAllowed( GameAction.Hit ))
+                        if ( game.IsActionAllowed(Blackjack.Action.Hit ))
                         {
                             game.Hit();
                         }
@@ -63,17 +63,17 @@
         {
             var sb = new StringBuilder();
 
-            if (game.IsActionAllowed(GameAction.Hit))
+            if (game.IsActionAllowed(Blackjack.Action.Hit))
             {
                 sb.Append("H)it");
             }
 
-            if (game.IsActionAllowed(GameAction.Stand))
+            if (game.IsActionAllowed(Blackjack.Action.Stand))
             {
                 sb.Append((sb.Length > 0 ? ", " : string.Empty) + "S)tand");
             }
 
-            if (game.IsActionAllowed(GameAction.Deal))
+            if (game.IsActionAllowed(Blackjack.Action.Deal))
             {
                 sb.Append((sb.Length > 0 ? ", " : string.Empty) + "D)eal");
             }
@@ -99,12 +99,12 @@
             switch (game.LastState)
             {
 
-                case GameState.DealerWon:
+                case State.DealerWon:
                     dealerMessage = winMessage;
                     playerMessage = blankMessage;
                     break;
 
-                case GameState.PlayerWon:
+                case State.PlayerWon:
                     dealerMessage = blankMessage;
                     playerMessage = winMessage;
                     break;
@@ -133,12 +133,12 @@
         {
             var offsetTop = hand.IsDealer ? DealerOffsetTop : PlayerOffsetTop;
 
-            var name = hand.IsDealer ? "Dealer" : "Player";
+            var player = hand.IsDealer ? "Dealer" : "Player";
             
             Console.SetCursorPosition(HorizontalOffsetStart, offsetTop);
             Console.Write(string.Format("{0} Real: ({1}) Hard: {2} Soft: {3}", 
-                                    name, hand.RealValue, hand.HardValue, hand.SoftValue)
-                                    .PadRight(30));
+                                    player, hand.RealValue, hand.HardValue, hand.SoftValue)
+                                    .PadRight(50));
 
             for (var i = 0; i < hand.Cards.Count; i++)
             {

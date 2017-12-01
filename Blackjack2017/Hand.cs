@@ -61,8 +61,11 @@
         {
             return (handValue > 21);   
         }
+
+        //Add a card to the current hand
         public void AddCard(PlayingCard card)
         {
+            // 'cards' represent the cards held in 'this' hand
             this.cards.Add(card);
 
             if (Changed != null)

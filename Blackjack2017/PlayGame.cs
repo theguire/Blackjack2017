@@ -5,8 +5,8 @@ namespace Blackjack
 
     class PlayGame
     {
-        private GameAction allowedActions;
-        private GameState lastState;
+        private Action allowedActions;
+        private State lastState;
 
         private Deck deck;
 
@@ -14,8 +14,8 @@ namespace Blackjack
         {
             this.Dealer = new Dealer();
             this.Player = new Player();
-            this.AllowedActions = GameAction.None;
-            this.LastState = GameState.Unknown;
+            this.AllowedActions = Action.None;
+            this.LastState = State.Unknown;
 
         }
 
@@ -24,7 +24,7 @@ namespace Blackjack
 
         public Player Player { get; private set; }
         public Dealer Dealer { get; private set; }
-        public GameAction AllowedActions
+        public Action AllowedActions
         {
             get
             {
@@ -46,7 +46,7 @@ namespace Blackjack
 
         public void Play()
         {
-            this.AllowedActions = GameAction.Deal;
+            this.AllowedActions = Action.Deal;
 
             if (this.AllowedActionsChanged != null)
             {
@@ -54,7 +54,7 @@ namespace Blackjack
             }
         }
 
-        public GameState LastState
+        public State LastState
         {
             get
             {
@@ -77,12 +77,12 @@ namespace Blackjack
         // Deal two cards to each player
         public void DealHands()
         {
-            if ( !IsActionAllowed( GameAction.Deal))
+            if ( !IsActionAllowed( Action.Deal))
             {
                 throw new InvalidOperationException();
             }
 
-            this.LastState = GameState.Unknown;
+            this.LastState = State.Unknown;
 
 
             // Build a new deck of cards before deal if less than 15 cards left in deck
@@ -116,7 +116,7 @@ namespace Blackjack
         }
         public void Hit()
         {
-            if ( !IsActionAllowed( GameAction.Hit))
+            if ( !IsActionAllowed( Action.Hit))
             {
                 throw new InvalidOperationException();
             }
@@ -125,8 +125,8 @@ namespace Blackjack
 
             if ( this.Player.Hand.BustHand(this.Player.Hand.RealValue))
             {
-                this.LastState = GameState.DealerWon;
-                this.AllowedActions = GameAction.Deal;
+                this.LastState = State.DealerWon;
+                this.AllowedActions = Action.Deal;
             }
         }
 
@@ -147,28 +147,28 @@ namespace Blackjack
             if (this.Dealer.Hand.BustHand(this.Dealer.Hand.RealValue) || 
                             this.Player.Hand.RealValue > this.Dealer.Hand.RealValue)
             {
-                this.LastState = GameState.PlayerWon;
+                this.LastState = State.PlayerWon;
             }
             else if (this.Dealer.Hand.RealValue == this.Player.Hand.RealValue)
             {
-                this.LastState = GameState.Draw;
+                this.LastState = State.Draw;
             }
             else
             {
-                this.LastState = GameState.DealerWon;
+                this.LastState = State.DealerWon;
             }
 
         }
         public void Stand()
         {
-           if ( ! IsActionAllowed(GameAction.Stand ))
+           if ( ! IsActionAllowed(Action.Stand ))
             {
                 throw new InvalidOperationException();
             }
             DealerPlay();
             DetermineWinner();
 
-            this.AllowedActions = GameAction.Deal;
+            this.AllowedActions = Action.Deal;
         }
 
         public void PlayTheDeal()
@@ -178,26 +178,26 @@ namespace Blackjack
             {
                 if (this.Dealer.Hand.SoftValue == 21)
                 {
-                    this.LastState = GameState.Draw;
+                    this.LastState = State.Draw;
                 }
                 else
                 {
-                    this.LastState = GameState.PlayerWon;
+                    this.LastState = State.PlayerWon;
                 }
-                this.AllowedActions = GameAction.Deal;
+                this.AllowedActions = Action.Deal;
             }
             else if (this.Dealer.Hand.RealValue == 21)
             {
-                this.LastState = GameState.DealerWon;
-                this.AllowedActions = GameAction.Deal;
+                this.LastState = State.DealerWon;
+                this.AllowedActions = Action.Deal;
             }
             else
             {
-                this.AllowedActions = GameAction.Hit | GameAction.Stand;
+                this.AllowedActions = Action.Hit | Action.Stand;
             }
         }
 
-        public bool IsActionAllowed(GameAction desiredAction)
+        public bool IsActionAllowed(Action desiredAction)
         {
             return ((this.AllowedActions & desiredAction) == desiredAction);
         }
