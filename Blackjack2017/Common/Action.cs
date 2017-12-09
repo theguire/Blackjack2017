@@ -8,7 +8,7 @@
         Stand = 4,
         Hit = 5,
         Split = 6,
-        DoubleDown = 7
+        DoubleDown = 8
 
     }
 }

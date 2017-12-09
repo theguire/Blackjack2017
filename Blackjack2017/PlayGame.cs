@@ -66,10 +66,8 @@ namespace Blackjack
                 if (this.lastState != value)
                 {
                     this.lastState = value;
-                    if (this.LastStateChanged != null)
-                    {
+                    if ( LastStateChanged != null)
                         this.LastStateChanged(this, EventArgs.Empty);
-                    }
                 }
             }
         }
@@ -84,13 +82,9 @@ namespace Blackjack
 
             this.LastState = State.Unknown;
 
-
             // Build a new deck of cards before deal if less than 15 cards left in deck
-            if ((this.deck == null) || (deck.Count() < 15))
-            {
+            if ((this.deck == null) || (deck.Count() < GameParameters.DeckLowCardCount))
                 this.deck = new Deck();
-            }
-
             this.DealNewHands(); // Deal hand to player and dealer
             this.PlayTheDeal();
         }
@@ -104,7 +98,6 @@ namespace Blackjack
         {
             this.Dealer.Hand.Clear();
             this.Player.Hand.Clear();
-
         }
 
         private void DealNewHands()
@@ -112,7 +105,6 @@ namespace Blackjack
             this.ClearHands();
             this.DealPlayersCard();  // Deal first card to Player and Dealer
             this.DealPlayersCard();  // Deal second card to Player and Dealer
-
         }
         public void Hit()
         {
@@ -123,41 +115,32 @@ namespace Blackjack
 
             this.deck.DealCard(this.Player.Hand);
 
-            if ( this.Player.Hand.BustHand(this.Player.Hand.RealValue))
+            if ( this.Player.Hand.IsBustHand(this.Player.Hand.Value))
             {
                 this.LastState = State.DealerWon;
                 this.AllowedActions = Action.Deal;
             }
         }
 
-
         private void DealerPlay()
         {
-
-            while ((this.Dealer.Hand.SoftValue < 17) && (this.Dealer.Hand.RealValue < 17))
+            while ((this.Dealer.Hand.SoftValue < GameParameters.SoftHandValue ) && 
+                        (this.Dealer.Hand.Value < GameParameters.SoftHandValue))
             {
                 this.deck.DealCard(Dealer.Hand);
             }
-
-
         }
 
         private void DetermineWinner()
         {
-            if (this.Dealer.Hand.BustHand(this.Dealer.Hand.RealValue) || 
-                            this.Player.Hand.RealValue > this.Dealer.Hand.RealValue)
-            {
+            if ( Dealer.Hand.IsBustHand( Dealer.Hand.Value ) || Player.Hand.Value > Dealer.Hand.Value )
                 this.LastState = State.PlayerWon;
-            }
-            else if (this.Dealer.Hand.RealValue == this.Player.Hand.RealValue)
-            {
-                this.LastState = State.Draw;
-            }
-            else
-            {
-                this.LastState = State.DealerWon;
-            }
 
+            else if (this.Dealer.Hand.Value == this.Player.Hand.Value)
+                this.LastState = State.Draw;
+
+            else
+                this.LastState = State.DealerWon;
         }
         public void Stand()
         {
@@ -165,18 +148,17 @@ namespace Blackjack
             {
                 throw new InvalidOperationException();
             }
-            DealerPlay();
+            DealerPlay();   //Player stands.  Dealer will draw to (soft) seventeen
             DetermineWinner();
 
             this.AllowedActions = Action.Deal;
         }
 
-        public void PlayTheDeal()
+        private void PlayTheDeal()
         {
-
-            if (this.Player.Hand.SoftValue == 21 || this.Player.Hand.RealValue == 21 )
+            if ( Player.Hand.IsBlackjack() )
             {
-                if (this.Dealer.Hand.SoftValue == 21)
+                if ( Dealer.Hand.IsBlackjack() )
                 {
                     this.LastState = State.Draw;
                 }
@@ -186,14 +168,14 @@ namespace Blackjack
                 }
                 this.AllowedActions = Action.Deal;
             }
-            else if (this.Dealer.Hand.RealValue == 21)
+            else if ( Dealer.Hand.IsBlackjack() )
             {
                 this.LastState = State.DealerWon;
                 this.AllowedActions = Action.Deal;
             }
             else
             {
-                this.AllowedActions = Action.Hit | Action.Stand;
+                this.AllowedActions = Action.Hit | Action.Stand | Action.DoubleDown;
             }
         }
 

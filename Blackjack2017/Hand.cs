@@ -29,17 +29,22 @@
             get { return(GetHandValue());  }
         }
 
+        public bool IsBlackjack()
+        {
+            return ( this.Value == GameParameters.Blackjack );
+        }
         // Return the number of Aces in the hand 
         private int GetAcesCount()
         {
             return( this.cards.Count(c => c.CardRank == CardRank.Ace));
         }
 
-        public int RealValue
+        public int Value
         {
             get
             {
-                return (BustHand(HardValue) ? SoftValue : (HardValue >= SoftValue ? HardValue : SoftValue));
+                // If the hard value of the hand is a bust, play with the Soft hand
+                return ( IsBustHand( HardValue ) ? SoftValue : HardValue );
             }
         }
 
@@ -57,9 +62,9 @@
             return( this.cards.Select(c => (int)c.CardRank).Sum());
         }
 
-        public bool BustHand( int handValue )
+        public bool IsBustHand( int handValue )
         {
-            return (handValue > 21);   
+            return (handValue > GameParameters.Blackjack);   
         }
 
         //Add a card to the current hand

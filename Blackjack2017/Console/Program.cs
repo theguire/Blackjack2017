@@ -6,21 +6,24 @@
 
     public class Program
     {
-        const int DealerOffsetTop = 1;
-        const int PlayerOffsetTop = 13;
-        const int HorizontalOffsetStart = 2;
-        const int GameResultsHorizontalOffset = 20;
-        const int CardHeight = 8;
+        const int DealerMsgConsolePosY = 1;
+        const int PlayerMsgConsolePosY = 13;
+        const int StartMsgConsolePosX = 2;
+        const int GameResultsStartMsgConsolePosX = 1;
+        const int CardHeight = 6;
+        const int ConsoleWindowWidth = 100;
+        const int ConsoleWindowHeight = 50;
+        const int CardStartPosX = 5;
+
 
         public static void Main(string[ ] args)
         {
-
-
-
-            Console.BufferWidth = Console.WindowWidth = 70;
-            Console.BufferHeight = Console.WindowHeight = 26;
+            Console.BufferWidth = Console.WindowWidth = ConsoleWindowWidth;
+            Console.BufferHeight = Console.WindowHeight = ConsoleWindowHeight;
             Console.CursorVisible = false;
-            var game = new PlayGame();
+
+            var game = new PlayGame();// Instantiate the game
+
             game.AllowedActionsChanged += OnAllowedActionsChanged;
             game.LastStateChanged += OnLastStateChanged;
             game.Dealer.Hand.Changed += OnHandChanged;
@@ -33,8 +36,8 @@
 
                 switch (key.Key)
                 {
-                    case ConsoleKey.D:  //Deal 
-                    case ConsoleKey.S:  // Stand
+                    case ConsoleKey.Enter:  //Deal 
+                    case ConsoleKey.Spacebar:  // Stand
                         if ( game.IsActionAllowed(Blackjack.Action.Deal ))
                         {
                             game.DealHands();
@@ -42,7 +45,6 @@
                         else
                         {
                             game.Stand();
-
                         }
 
                         break;
@@ -51,7 +53,16 @@
                         {
                             game.Hit();
                         }
-
+                        break;
+                    case ConsoleKey.D:  // Double Down
+                        if (game.IsActionAllowed(Blackjack.Action.Hit))
+                        {
+                            game.Hit();
+                            if ( game.IsActionAllowed( Blackjack.Action.Stand))
+                            {
+                                game.Stand();
+                            }
+                        }
                         break;
                 }
             }
@@ -70,16 +81,23 @@
 
             if (game.IsActionAllowed(Blackjack.Action.Stand))
             {
-                sb.Append((sb.Length > 0 ? ", " : string.Empty) + "S)tand");
+                sb.Append((sb.Length > 0 ? ", " : string.Empty) + "<SPACEBAR> Stand");
+            }
+
+            if ( game.IsActionAllowed( Blackjack.Action.DoubleDown ) )
+            {
+                sb.Append( ( sb.Length > 0 ? ", " : string.Empty ) + "D)ouble Down" );
             }
 
             if (game.IsActionAllowed(Blackjack.Action.Deal))
             {
-                sb.Append((sb.Length > 0 ? ", " : string.Empty) + "D)eal");
+                sb.Append((sb.Length > 0 ? ", " : string.Empty) + "<ENTER> Deal" );
             }
 
-            Console.SetCursorPosition(Console.BufferWidth - 50, 24);
-            Console.WriteLine(sb.ToString().PadLeft(20));
+            Console.SetCursorPosition(Console.BufferWidth - 60, 20);
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine(sb.ToString().PadLeft(40));
+            Console.ResetColor();
         }
 
         private static void OnAllowedActionsChanged(object sender, EventArgs e)
@@ -89,7 +107,7 @@
 
         private static void ShowWinner(PlayGame game)
         {
-            Console.ForegroundColor = ConsoleColor.DarkGreen;
+            Console.ForegroundColor = ConsoleColor.Green;
 
             String winMessage = "Winner";
             String blankMessage = "      ";
@@ -115,11 +133,11 @@
                     break;
             }
 
-            Console.SetCursorPosition(HorizontalOffsetStart, PlayerOffsetTop + 1);
-            Console.Write(playerMessage.PadLeft(GameResultsHorizontalOffset));
+            Console.SetCursorPosition(StartMsgConsolePosX, PlayerMsgConsolePosY + 1);
+            Console.Write(playerMessage.PadLeft(GameResultsStartMsgConsolePosX));
 
-            Console.SetCursorPosition(HorizontalOffsetStart, DealerOffsetTop + 1);
-            Console.Write(dealerMessage.PadLeft(GameResultsHorizontalOffset));
+            Console.SetCursorPosition(StartMsgConsolePosX, DealerMsgConsolePosY + 1);
+            Console.Write(dealerMessage.PadLeft(GameResultsStartMsgConsolePosX));
 
             Console.ResetColor();
         }
@@ -131,58 +149,58 @@
 
         private static void ShowCards(Hand hand)
         {
-            var offsetTop = hand.IsDealer ? DealerOffsetTop : PlayerOffsetTop;
+            var verticleOffset = hand.IsDealer ? DealerMsgConsolePosY : PlayerMsgConsolePosY;
 
             var player = hand.IsDealer ? "Dealer" : "Player";
             
-            Console.SetCursorPosition(HorizontalOffsetStart, offsetTop);
-            Console.Write(string.Format("{0} Real: ({1}) Hard: {2} Soft: {3}", 
-                                    player, hand.RealValue, hand.HardValue, hand.SoftValue)
-                                    .PadRight(50));
+            Console.SetCursorPosition(StartMsgConsolePosX, verticleOffset);
+            Console.Write(string.Format("{0} ({1})   Hard: {2}   Soft: {3}", player, 
+                                                                                                            hand.Value, 
+                                                                                                            hand.HardValue, 
+                                                                                                            hand.SoftValue)
+                                                                                                            .PadRight(50));
 
             for (var i = 0; i < hand.Cards.Count; i++)
             {
-                var isPlayerCard = i == hand.Cards.Count - 1;
-                Console.SetCursorPosition(HorizontalOffsetStart + (i * 5), offsetTop + 2);
-                WriteCardTop(isPlayerCard, i);
+                var isLastCard = i == hand.Cards.Count - 1;
+                Console.SetCursorPosition(StartMsgConsolePosX + (i * CardStartPosX ), verticleOffset + 2);
+                WriteCardTop(isLastCard, i);
                 
-                Console.SetCursorPosition(HorizontalOffsetStart + (i * 5), offsetTop + 3);
+                Console.SetCursorPosition(StartMsgConsolePosX + (i * CardStartPosX ), verticleOffset + 3);
                 WriteCard(hand, i);
 
                 for (int  j = 4; j < CardHeight; j++)
                 {
-                    Console.SetCursorPosition(HorizontalOffsetStart + (i * 5), offsetTop + j);
-                    WriteCardBorder(isPlayerCard, i);
+                    Console.SetCursorPosition(StartMsgConsolePosX + (i * CardStartPosX ), verticleOffset + j);
+                    WriteCardBorder(isLastCard, i);
                 }
 
-                Console.SetCursorPosition(HorizontalOffsetStart + (i * 5), offsetTop + CardHeight);
-                WriteCardBottom(isPlayerCard, i);
-
-                
+                Console.SetCursorPosition(StartMsgConsolePosX + (i * CardStartPosX ), verticleOffset + CardHeight);
+                WriteCardBottom(isLastCard, i);
             }
         }
 
-        private static void WriteCardBorder( bool isPlayerCard, int i)
+        private static void WriteCardBorder( bool isLastCard, int i)
         {
-            Console.WriteLine(" ".PadRight(5) + (isPlayerCard ? "  " : string.Empty).PadRight(Console.BufferWidth - 12 - (i * 5)));
+            Console.WriteLine(" ".PadRight(5) + (isLastCard ? "  " : string.Empty).PadRight(Console.BufferWidth - 12 - (i * 5)));
         }
         private static void WriteCard(Hand hand, int i)
         {
-            Console.WriteLine(" " + hand.Cards[i].ToString().PadRight(10) + string.Empty.PadRight(Console.BufferWidth - 12 - (i * 4)));
+            Console.WriteLine(" " + hand.Cards[i].ToString().PadRight(10) + string.Empty.PadRight(Console.BufferWidth - 12 - (i * 5)));
         }
-        private static void WriteCardTop( bool isPlayerCard, int i)
+        private static void WriteCardTop( bool isLastCard, int i)
         {
-            Console.Write("┌────" + (isPlayerCard ? "─┐" : string.Empty).PadRight(Console.BufferWidth - 12 - (i * 5)));
+            Console.Write("┌────" + (isLastCard ? "──┐" : string.Empty).PadRight(Console.BufferWidth - 12 - (i * 5)));
         }
 
-        private static void WriteCardBottom(bool isPlayerCard, int i)
+        private static void WriteCardBottom(bool isLastCard, int i)
         {
-            Console.WriteLine("└────" + (isPlayerCard ? "─┘" : string.Empty).PadRight(Console.BufferWidth - 12 - (i * 5)));
+            Console.WriteLine("└────" + (isLastCard ? "──┘" : string.Empty).PadRight(Console.BufferWidth - 12 - (i * 5)));
         }
 
         private static void OnHandChanged(object sender, EventArgs e)
         {
-            ShowCards((Hand)sender);
+            ShowCards( (Hand)sender );
         }
 
             
