@@ -6,13 +6,15 @@
 
     public class Program
     {
-        const int DealerMsgConsolePosY = 1;
-        const int PlayerMsgConsolePosY = 13;
+        const int DealerCardPosY = 1;
+        const int PlayerCardPosY = 13;
         const int StartMsgConsolePosX = 2;
         const int GameResultsStartMsgConsolePosX = 1;
+        const int GamePlayMsgPosYOffset = 20;
         const int CardHeight = 6;
         const int ConsoleWindowWidth = 100;
         const int ConsoleWindowHeight = 50;
+        
         const int CardStartPosX = 5;
 
 
@@ -74,9 +76,9 @@
         {
             var sb = new StringBuilder();
 
-            if (game.IsActionAllowed(Blackjack.Action.Hit))
+           if (game.IsActionAllowed(Blackjack.Action.Hit))
             {
-                sb.Append("H)it");
+                sb.Append( "H)it" );
             }
 
             if (game.IsActionAllowed(Blackjack.Action.Stand))
@@ -94,9 +96,9 @@
                 sb.Append((sb.Length > 0 ? ", " : string.Empty) + "<ENTER> Deal" );
             }
 
-            Console.SetCursorPosition(Console.BufferWidth - 60, 20);
+            Console.SetCursorPosition(Console.BufferWidth - 60, GamePlayMsgPosYOffset);
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine(sb.ToString().PadLeft(40));
+            Console.WriteLine(sb.ToString().PadLeft(60));
             Console.ResetColor();
         }
 
@@ -107,6 +109,7 @@
 
         private static void ShowWinner(PlayGame game)
         {
+            game.Stats.GameCount++;
             Console.ForegroundColor = ConsoleColor.Green;
 
             String winMessage = "Winner";
@@ -118,25 +121,32 @@
             {
 
                 case State.DealerWon:
+                    game.Dealer.WinCount++;
                     dealerMessage = winMessage;
                     playerMessage = blankMessage;
                     break;
 
                 case State.PlayerWon:
+                    game.Player.WinCount++;
                     dealerMessage = blankMessage;
                     playerMessage = winMessage;
                     break;
 
                 default:
+                    game.Stats.DrawCount++;
                     dealerMessage = blankMessage;
                     playerMessage = blankMessage;
                     break;
             }
 
-            Console.SetCursorPosition(StartMsgConsolePosX, PlayerMsgConsolePosY + 1);
+            var sb = new StringBuilder();
+            Console.SetCursorPosition(StartMsgConsolePosX, PlayerCardPosY + 1);
+            //sb.Append( playerMessage );
+            //String message = new String( "Wins {0} Win % {1}", game.Player.WinCount,
+            //                            game.Player.WinCount / game.Stats.GameCount )
             Console.Write(playerMessage.PadLeft(GameResultsStartMsgConsolePosX));
 
-            Console.SetCursorPosition(StartMsgConsolePosX, DealerMsgConsolePosY + 1);
+            Console.SetCursorPosition(StartMsgConsolePosX, DealerCardPosY + 1);
             Console.Write(dealerMessage.PadLeft(GameResultsStartMsgConsolePosX));
 
             Console.ResetColor();
@@ -149,7 +159,7 @@
 
         private static void ShowCards(Hand hand)
         {
-            var verticleOffset = hand.IsDealer ? DealerMsgConsolePosY : PlayerMsgConsolePosY;
+            var verticleOffset = hand.IsDealer ? DealerCardPosY : PlayerCardPosY;
 
             var player = hand.IsDealer ? "Dealer" : "Player";
             
@@ -162,13 +172,13 @@
 
             for (var i = 0; i < hand.Cards.Count; i++)
             {
-                var isLastCard = i == hand.Cards.Count - 1;
+                var isLastCard = ( i == hand.Cards.Count - 1 );
                 Console.SetCursorPosition(StartMsgConsolePosX + (i * CardStartPosX ), verticleOffset + 2);
                 WriteCardTop(isLastCard, i);
                 
                 Console.SetCursorPosition(StartMsgConsolePosX + (i * CardStartPosX ), verticleOffset + 3);
                 WriteCard(hand, i);
-
+                 
                 for (int  j = 4; j < CardHeight; j++)
                 {
                     Console.SetCursorPosition(StartMsgConsolePosX + (i * CardStartPosX ), verticleOffset + j);

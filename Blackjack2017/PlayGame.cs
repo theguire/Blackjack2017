@@ -7,6 +7,7 @@ namespace Blackjack
     {
         private Action allowedActions;
         private State lastState;
+        public GameStats Stats = new GameStats();
 
         private Deck deck;
 
@@ -124,8 +125,7 @@ namespace Blackjack
 
         private void DealerPlay()
         {
-            while ((this.Dealer.Hand.SoftValue < GameParameters.SoftHandValue ) && 
-                        (this.Dealer.Hand.Value < GameParameters.SoftHandValue))
+            while ( this.Dealer.Hand.Value < GameParameters.DealerStandLimit )
             {
                 this.deck.DealCard(Dealer.Hand);
             }
@@ -133,7 +133,8 @@ namespace Blackjack
 
         private void DetermineWinner()
         {
-            if ( Dealer.Hand.IsBustHand( Dealer.Hand.Value ) || Player.Hand.Value > Dealer.Hand.Value )
+            if ( Dealer.Hand.IsBustHand( Dealer.Hand.Value ) || 
+                Player.Hand.Value > Dealer.Hand.Value )
                 this.LastState = State.PlayerWon;
 
             else if (this.Dealer.Hand.Value == this.Player.Hand.Value)
