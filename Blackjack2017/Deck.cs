@@ -17,6 +17,8 @@ namespace Blackjack
             deck = MakeADeck();
         }
 
+
+        // Number of cards remaining in deck.
         public int Count()
         {
             return (deck.Count());
@@ -31,6 +33,7 @@ namespace Blackjack
 
         }
 
+        // Deal a random card from the deck.
         public PlayingCard DealCard(Hand hand)
         {
             Random rand = new Random();
@@ -41,7 +44,7 @@ namespace Blackjack
 
             PlayingCard card = deck[idx];           // Get the card at the random index
 
-            hand.AddCard(card);
+            hand.TakeCard(card);
             deck.RemoveAt(idx);                         // Remove the card from the deck
             return (card);
         }

@@ -10,6 +10,7 @@
         public event EventHandler Changed;
         public bool IsDealer { get; private set; }
 
+        //private readonly List<PlayingCard> cards = new List<PlayingCard>();
         private readonly List<PlayingCard> cards = new List<PlayingCard>();
 
 
@@ -18,6 +19,11 @@
             this.IsDealer = isDealer;
             AddHandToPlayer();
         }
+
+        //public ReadOnlyCollection<PlayingCard> Cards
+        //{
+        //    get { return this.cards.AsReadOnly(); }
+        //}
 
         public ReadOnlyCollection<PlayingCard> Cards
         {
@@ -39,6 +45,8 @@
             return( this.cards.Count(c => c.CardRank == CardRank.Ace));
         }
 
+
+        // The hand being played.
         public int Value
         {
             get
@@ -48,6 +56,7 @@
             }
         }
 
+        
         public int HardValue
         {
             get
@@ -67,8 +76,8 @@
             return (handValue > GameParameters.Blackjack);   
         }
 
-        //Add a card to the current hand
-        public void AddCard(PlayingCard card)
+        //The hand takes a card
+        public void TakeCard(PlayingCard card)
         {
             // 'cards' represent the cards held in 'this' hand
             this.cards.Add(card);
@@ -85,9 +94,19 @@
 
         }
 
+        // Clear the hand of all cards
         public void Clear()
         {
             this.cards.Clear();
+        }
+
+        // The hand gets split
+        public PlayingCard SplitHand()
+        {
+            PlayingCard splitCard = this.cards.Last<PlayingCard>();
+            this.cards.Remove( splitCard );
+
+            return ( splitCard );
         }
     }
 }

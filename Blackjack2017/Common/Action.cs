@@ -9,7 +9,6 @@
         Hit = 5,
         Split = 6,
         DoubleDown = 8
-
     }
 }
 

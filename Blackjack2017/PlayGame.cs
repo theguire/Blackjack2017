@@ -1,9 +1,11 @@
 ﻿
+using System;
+
 namespace Blackjack
 {
-    using System;
 
-    class PlayGame
+
+    public class PlayGame
     {
         private Action allowedActions;
         private State lastState;
@@ -49,7 +51,7 @@ namespace Blackjack
         {
             this.AllowedActions = Action.Deal;
 
-            if (this.AllowedActionsChanged != null)
+            if ( AllowedActionsChanged != null)
             {
                 this.AllowedActionsChanged(this, EventArgs.Empty);
             }
@@ -154,6 +156,7 @@ namespace Blackjack
 
             this.AllowedActions = Action.Deal;
         }
+       
 
         private void PlayTheDeal()
         {

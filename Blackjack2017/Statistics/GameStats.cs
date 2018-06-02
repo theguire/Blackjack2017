@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Blackjack
 {
-    class GameStats
+    public class GameStats
     {
         public int GameCount = 0;
         public int DrawCount = 0;
